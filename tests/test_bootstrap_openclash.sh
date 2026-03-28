@@ -79,6 +79,8 @@ export PATH="${FAKE_BIN}:${PATH}"
 bash "${ROOT_DIR}/scripts/bootstrap-openclash.sh"
 
 test -f "${STATE_DIR}/config.yaml"
+grep -q '^allow-lan: true$' "${STATE_DIR}/config.yaml"
+grep -Eq "^bind-address: ('\\*'|\\*)$" "${STATE_DIR}/config.yaml"
 grep -q '^mixed-port: 9981$' "${STATE_DIR}/config.yaml"
 grep -q "defaultBackendURL: '/openclash/'" "${UI_DIR}/config.js"
 grep -q "mihomo -f ${STATE_DIR}/config.yaml" "${MIHOMO_LOG}"

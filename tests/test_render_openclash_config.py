@@ -24,7 +24,8 @@ def test_deployment_owned_fields_are_overridden() -> None:
     )
 
     assert rendered["mixed-port"] == 9981
-    assert rendered["allow-lan"] is False
+    assert rendered["allow-lan"] is True
+    assert rendered["bind-address"] == "*"
     assert rendered["external-controller"] == "0.0.0.0:9097"
     assert rendered["external-ui"] == "/var/lib/openclash/ui"
     assert rendered["log-level"] == "warning"

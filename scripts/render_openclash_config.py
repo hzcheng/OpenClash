@@ -31,7 +31,8 @@ def render_config(
 
     rendered = copy.deepcopy(base_config)
     rendered["mixed-port"] = mixed_port
-    rendered["allow-lan"] = False
+    rendered["allow-lan"] = True
+    rendered["bind-address"] = "*"
     rendered["external-controller"] = f"0.0.0.0:{controller_port}"
     rendered["external-ui"] = ui_dir
     rendered["log-level"] = log_level

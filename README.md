@@ -5,18 +5,18 @@ This repository builds a custom `mihomo` image with the `metacubexd` dashboard a
 ## What This Deployment Does
 
 - Runs `mihomo` on the internal machine only.
-- Exposes the mixed proxy port only on host loopback.
+- Exposes one shared mixed proxy port for the host, Docker containers, LAN devices, and tailnet devices.
 - Publishes the dashboard through `NestGate` at `https://gate.teraai.cn/openclash/`.
 - Rebuilds the runtime `config.yaml` from the subscription every time the container starts.
 
-This means the proxy is intended for the internal host itself, while the dashboard is intended to be accessed through the gateway.
+This means the proxy is now a shared entrypoint on the internal machine, while the dashboard is still intended to be accessed through the gateway.
 
 ## Required `.env` Values
 
 Set these in `.env` (see `.env.example` for defaults):
 
 - `OPENCLASH_SUBSCRIPTION_URL`: Clash-compatible subscription URL.
-- `OPENCLASH_MIXED_PORT`: Local mixed proxy port (host-loopback only).
+- `OPENCLASH_MIXED_PORT`: Shared mixed proxy port for host, containers, LAN, and tailnet.
 - `OPENCLASH_CONTROLLER_PORT`: Controller/UI port (published for NestGate).
 - `OPENCLASH_LOG_LEVEL`: Log level for `mihomo`.
 - `OPENCLASH_UI_PATH`: Public dashboard path (keep `/openclash/`).
@@ -39,9 +39,9 @@ OPENCLASH_STATE_DIR=/root/.config/mihomo
 OPENCLASH_AUTO_UPDATE_UI=false
 ```
 
-## Local Proxy Usage
+## Proxy Usage
 
-The mixed proxy port is bound to host loopback only. Use `127.0.0.1:${OPENCLASH_MIXED_PORT}` from the internal host to access the proxy.
+The mixed proxy port is now published on all interfaces.
 
 Examples:
 
@@ -49,7 +49,14 @@ Examples:
 - HTTPS proxy: `http://127.0.0.1:9981`
 - SOCKS-compatible client using mixed mode: `127.0.0.1:9981`
 
-The proxy port is not intended to be reachable from LAN devices, from the cloud gateway, or from the public internet.
+Shared entrypoints:
+
+- Host itself: `127.0.0.1:${OPENCLASH_MIXED_PORT}`
+- Docker containers on the same machine: `http://host.docker.internal:${OPENCLASH_MIXED_PORT}`
+- LAN devices: `http://<internal-host-lan-ip>:${OPENCLASH_MIXED_PORT}`
+- Tailnet devices: `http://100.101.7.100:${OPENCLASH_MIXED_PORT}`
+
+This proxy entrypoint does not use username/password authentication. Any device that can reach the machine on LAN or tailnet can use it.
 
 `mihomo` requires the external UI path to live under its safe home directory. The default state/UI paths therefore use `/root/.config/mihomo` inside the container.
 
@@ -128,7 +135,7 @@ Expected:
 
 - `openclash` container is `Up`
 - `/${OPENCLASH_CONTROLLER_PORT}/ui/` returns `200`
-- the proxy port is only reachable from the host itself
+- the host can reach the shared proxy port
 
 From another tailnet-reachable machine:
 
@@ -140,7 +147,17 @@ curl --noproxy '*' -sS -o /dev/null -w '%{http_code}\n' http://100.101.7.100:${O
 Expected:
 
 - controller/UI path returns `200`
-- mixed proxy port does not answer on the tailnet address
+- mixed proxy port answers on the tailnet address
+
+From a Docker container on the same machine:
+
+```bash
+docker exec DevBox-devbox sh -lc 'env -u http_proxy -u https_proxy -u all_proxy -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY curl --noproxy "*" -sS -o /dev/null -w "%{http_code}\n" http://host.docker.internal:9981'
+```
+
+Expected:
+
+- the container can reach the shared proxy via `host.docker.internal`
 
 From the public internet:
 
@@ -172,7 +189,7 @@ docker exec openclash sh -c 'curl -I --max-time 20 https://testingcf.jsdelivr.ne
 - If the container keeps restarting with a `SAFE_PATHS` error, verify `OPENCLASH_STATE_DIR` and `OPENCLASH_UI_DIR` are under `/root/.config/mihomo`.
 - If the dashboard opens but cannot connect to the backend, verify `/root/.config/mihomo/ui/config.js` contains `defaultBackendURL: '/openclash/'`.
 - If `/openclash/ui/` works on the tailnet but not publicly, check `NestGate` route rendering and gateway auth configuration.
-- If the proxy works on the host but also appears reachable elsewhere, re-check the compose port binding for `OPENCLASH_MIXED_PORT`; it must stay on `127.0.0.1`.
+- If the proxy is unexpectedly unreachable from LAN, tailnet, or containers, re-check the compose port binding for `OPENCLASH_MIXED_PORT`; it should no longer be pinned to `127.0.0.1`.
 - If a subscription update does not appear to take effect, restart or recreate the container so the bootstrap flow regenerates `config.yaml`.
 
 ## Key Files

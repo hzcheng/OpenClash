@@ -13,7 +13,7 @@ services:
     entrypoint:
       - /usr/local/bin/bootstrap-openclash.sh
     ports:
-      - "127.0.0.1:${OPENCLASH_MIXED_PORT}:${OPENCLASH_MIXED_PORT}"
+      - "${OPENCLASH_MIXED_PORT}:${OPENCLASH_MIXED_PORT}"
       - "${OPENCLASH_CONTROLLER_PORT}:${OPENCLASH_CONTROLLER_PORT}"
     volumes:
       - openclash-state:${OPENCLASH_STATE_DIR}
