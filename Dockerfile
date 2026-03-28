@@ -10,12 +10,13 @@ RUN apk add --no-cache \
     --repository "${OPENCLASH_BUILD_ALPINE_REPO}/v3.22/community" \
     ca-certificates \
     curl \
+    rsync \
     python3 \
     py3-yaml \
     tar \
   && curl -fsSL "${OPENCLASH_BUILD_METACUBEXD_URL}" -o /tmp/metacubexd.tar.gz \
-  && mkdir -p /var/lib/openclash/ui \
-  && tar -xzf /tmp/metacubexd.tar.gz -C /var/lib/openclash/ui --strip-components=1 \
+  && mkdir -p /opt/metacubexd \
+  && tar -xzf /tmp/metacubexd.tar.gz -C /opt/metacubexd --strip-components=1 \
   && rm -f /tmp/metacubexd.tar.gz
 
 COPY scripts/bootstrap-openclash.sh /usr/local/bin/bootstrap-openclash.sh

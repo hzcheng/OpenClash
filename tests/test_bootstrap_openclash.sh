@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP_DIR="$(mktemp -d)"
 STATE_DIR="${TMP_DIR}/state"
 UI_DIR="${TMP_DIR}/ui"
+BUNDLED_UI_DIR="${TMP_DIR}/bundled-ui"
 FAKE_BIN="${TMP_DIR}/bin"
 MIHOMO_LOG="${TMP_DIR}/mihomo-invocation.log"
 RENDER_BIN="/usr/local/bin/render_openclash_config.py"
@@ -23,7 +24,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "${STATE_DIR}" "${UI_DIR}" "${FAKE_BIN}"
+mkdir -p "${STATE_DIR}" "${UI_DIR}" "${BUNDLED_UI_DIR}" "${FAKE_BIN}"
+
+cat > "${BUNDLED_UI_DIR}/config.js" <<'EOF'
+window.__METACUBEXD_CONFIG__ = {
+  defaultBackendURL: '',
+}
+EOF
 
 cat > "${FAKE_BIN}/mihomo" <<'EOF'
 #!/usr/bin/env bash
@@ -65,6 +72,7 @@ export OPENCLASH_LOG_LEVEL=warning
 export OPENCLASH_UI_PATH=/openclash
 export OPENCLASH_UI_DIR="${UI_DIR}"
 export OPENCLASH_STATE_DIR="${STATE_DIR}"
+export OPENCLASH_BUNDLED_UI_SOURCE_DIR="${BUNDLED_UI_DIR}"
 export MIHOMO_INVOCATION_LOG="${MIHOMO_LOG}"
 export PATH="${FAKE_BIN}:${PATH}"
 
@@ -72,4 +80,5 @@ bash "${ROOT_DIR}/scripts/bootstrap-openclash.sh"
 
 test -f "${STATE_DIR}/config.yaml"
 grep -q '^mixed-port: 9981$' "${STATE_DIR}/config.yaml"
+grep -q "defaultBackendURL: '/openclash/'" "${UI_DIR}/config.js"
 grep -q "mihomo -f ${STATE_DIR}/config.yaml" "${MIHOMO_LOG}"

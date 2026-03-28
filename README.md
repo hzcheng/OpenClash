@@ -21,6 +21,8 @@ Set these in `.env` (see `.env.example` for defaults):
 
 The mixed proxy port is bound to host loopback only. Use `127.0.0.1:${OPENCLASH_MIXED_PORT}` from the host to access the proxy.
 
+`mihomo` requires the external UI path to live under its safe home directory. The default state/UI paths therefore use `/root/.config/mihomo` inside the container.
+
 ## Public Dashboard
 
 The dashboard is published through NestGate at `https://gate.teraai.cn/openclash/`.

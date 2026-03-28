@@ -8,6 +8,11 @@ import yaml
 
 
 REQUIRED_SECTIONS = ("proxies", "proxy-groups", "rules")
+GEOX_URLS = {
+    "geoip": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
+    "geosite": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat",
+    "mmdb": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb",
+}
 
 
 def render_config(
@@ -30,6 +35,8 @@ def render_config(
     rendered["external-controller"] = f"0.0.0.0:{controller_port}"
     rendered["external-ui"] = ui_dir
     rendered["log-level"] = log_level
+    rendered["geo-auto-update"] = False
+    rendered["geox-url"] = copy.deepcopy(GEOX_URLS)
     return rendered
 
 

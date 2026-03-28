@@ -46,6 +46,25 @@ def test_subscription_sections_are_preserved() -> None:
     assert rendered["rules"] == base_config["rules"]
 
 
+def test_renderer_pins_geodata_downloads_to_jsdelivr_urls() -> None:
+    base_config = _load_fixture()
+
+    rendered = render_config(
+        base_config,
+        mixed_port=9981,
+        controller_port=9097,
+        ui_dir="/var/lib/openclash/ui",
+        log_level="warning",
+    )
+
+    assert rendered["geo-auto-update"] is False
+    assert rendered["geox-url"] == {
+        "geoip": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
+        "geosite": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat",
+        "mmdb": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb",
+    }
+
+
 @pytest.mark.parametrize("missing_key", ["proxies", "proxy-groups", "rules"])
 def test_missing_required_sections_raise_value_error(missing_key: str) -> None:
     base_config = _load_fixture()

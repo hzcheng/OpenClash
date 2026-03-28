@@ -10,12 +10,13 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    entrypoint:
+      - /usr/local/bin/bootstrap-openclash.sh
     ports:
       - "127.0.0.1:${OPENCLASH_MIXED_PORT}:${OPENCLASH_MIXED_PORT}"
       - "${OPENCLASH_CONTROLLER_PORT}:${OPENCLASH_CONTROLLER_PORT}"
     volumes:
-      - openclash-state:/var/lib/openclash
-    command: /usr/local/bin/bootstrap-openclash.sh
+      - openclash-state:${OPENCLASH_STATE_DIR}
 
 volumes:
   openclash-state:
