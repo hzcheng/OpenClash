@@ -6,10 +6,8 @@
 
 - 在内网机器上运行 `mihomo`。
 - 对外暴露一个共享混合代理端口，供宿主机、Docker 容器、LAN 设备和 Tailnet 设备使用。
-- 通过 `NestGate` 将面板发布到 `https://gate.teraai.cn/openclash/`。
+- 控制面板直接通过控制器端口访问，无需经过公网代理。
 - 每次容器启动时从订阅重新生成运行时 `config.yaml`。
-
-代理是内网机器上的共享出口，面板仍通过网关访问。
 
 ## 必填 `.env` 变量
 
@@ -17,9 +15,9 @@
 
 - `OPENCLASH_SUBSCRIPTION_URL`：Clash 兼容的订阅链接。
 - `OPENCLASH_MIXED_PORT`：供宿主机、容器、LAN 和 Tailnet 共享的混合代理端口。
-- `OPENCLASH_CONTROLLER_PORT`：控制器/UI 端口（供 NestGate 使用）。
+- `OPENCLASH_CONTROLLER_PORT`：控制器/UI 端口，面板通过此端口直接访问。
 - `OPENCLASH_LOG_LEVEL`：`mihomo` 日志级别。
-- `OPENCLASH_UI_PATH`：面板公开路径（保持 `/openclash/`）。
+- `OPENCLASH_UI_PATH`：面板的 URL 前缀路径（保持 `/openclash/`）。
 - `OPENCLASH_UI_DIR`：容器内 UI 静态资源路径。
 - `OPENCLASH_STATE_DIR`：容器内运行时状态目录。
 - `OPENCLASH_AUTO_UPDATE_UI`：文档占位，无实际效果（UI 资源在构建时已打入镜像）。
@@ -60,19 +58,15 @@ OPENCLASH_AUTO_UPDATE_UI=false
 
 `mihomo` 要求外部 UI 路径位于其安全目录下，因此默认 state/UI 路径均使用容器内的 `/root/.config/mihomo`。
 
-## 公网面板
+## 控制面板
 
-面板通过 NestGate 发布：
+面板直接通过控制器端口访问，无需公网代理：
 
-- `https://gate.teraai.cn/openclash/`
+- 宿主机：`http://127.0.0.1:${OPENCLASH_CONTROLLER_PORT}/ui/`
+- LAN 设备：`http://<内网主机 LAN IP>:${OPENCLASH_CONTROLLER_PORT}/ui/`
+- Tailnet 设备：`http://100.101.7.100:${OPENCLASH_CONTROLLER_PORT}/ui/`
 
-访问行为：
-
-- `NestGate` 将 `/openclash/` 重定向到 `/openclash/ui/`
-- 路由受现有网关 Basic Auth 保护
-- 通过网关认证后，`metacubexd` 通过同一公开路径 `/openclash/` 回调控制器
-
-控制器根路径为 API 接口，面板入口为 `/openclash/ui/`。
+首次打开时，`metacubexd` 可能提示配置后端地址，填入对应的 `http://<IP>:${OPENCLASH_CONTROLLER_PORT}` 即可。
 
 ## 启动
 
