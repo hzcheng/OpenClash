@@ -29,6 +29,7 @@ def test_deployment_owned_fields_are_overridden() -> None:
         controller_port=9097,
         ui_dir="/var/lib/openclash/ui",
         log_level="warning",
+        **OPENAI_KWARGS,
     )
 
     assert rendered["mixed-port"] == 9981
@@ -48,11 +49,16 @@ def test_subscription_sections_are_preserved() -> None:
         controller_port=9097,
         ui_dir="/var/lib/openclash/ui",
         log_level="warning",
+        **OPENAI_KWARGS,
     )
 
     assert rendered["proxies"] == base_config["proxies"]
-    assert rendered["proxy-groups"] == base_config["proxy-groups"]
-    assert rendered["rules"] == base_config["rules"]
+    # proxy-groups gains the injected OpenAI group at index 0; original groups follow
+    original_group_names = {g["name"] for g in base_config["proxy-groups"]}
+    rendered_group_names = {g["name"] for g in rendered["proxy-groups"]}
+    assert original_group_names.issubset(rendered_group_names)
+    # rules gains the OpenAI RULE-SET at index 0; original rules follow
+    assert rendered["rules"][1:] == base_config["rules"]
 
 
 def test_renderer_pins_geodata_downloads_to_jsdelivr_urls() -> None:
@@ -64,6 +70,7 @@ def test_renderer_pins_geodata_downloads_to_jsdelivr_urls() -> None:
         controller_port=9097,
         ui_dir="/var/lib/openclash/ui",
         log_level="warning",
+        **OPENAI_KWARGS,
     )
 
     assert rendered["geo-auto-update"] is False
