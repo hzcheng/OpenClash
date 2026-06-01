@@ -171,6 +171,28 @@ Expected:
 - `/openclash/` returns `302` to `/openclash/ui/`
 - `/openclash/ui/` returns `401` until gateway auth is provided
 
+## OpenAI Routing
+
+OpenAI traffic is steered to a `url-test` proxy-group built from your subscription's Singapore nodes. The renderer adds three things to the runtime config every restart:
+
+- a `rule-providers.openai` entry that pulls the `blackmatrix7` OpenAI rule list (jsdelivr-mirrored, refreshes every 24h)
+- an `OpenAI` proxy-group of `type: url-test` whose members are the proxies whose names match `OPENCLASH_OPENAI_REGION_REGEX`
+- a top-priority `RULE-SET,openai,OpenAI` rule
+
+Defaults route only Singapore nodes. To widen coverage to Japan as well:
+
+```dotenv
+OPENCLASH_OPENAI_REGION_REGEX=(?i)(🇸🇬|🇯🇵|SG|JP|Singapore|Japan|新加坡|日本|东京|狮城|Tokyo)
+```
+
+The default healthcheck URL is `https://chat.openai.com/cdn-cgi/trace`, which reflects real OpenAI reachability. If your provider rate-limits Cloudflare trace probes, switch to the more permissive Google probe:
+
+```dotenv
+OPENCLASH_OPENAI_HEALTHCHECK_URL=https://www.gstatic.com/generate_204
+```
+
+If a subscription refresh produces zero matching nodes, the renderer fails loudly and the container does not start — the proxy will not silently fall back to DIRECT. Rename nodes upstream or relax the regex.
+
 ## Mainland China Notes
 
 This deployment includes two hardening choices for mainland network conditions:
