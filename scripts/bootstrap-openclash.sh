@@ -40,6 +40,11 @@ require_env OPENCLASH_STATE_DIR
 OPENCLASH_UI_PATH="$(normalize_ui_path "${OPENCLASH_UI_PATH:-/openclash/}")"
 export OPENCLASH_UI_PATH
 OPENCLASH_BUNDLED_UI_SOURCE_DIR="${OPENCLASH_BUNDLED_UI_SOURCE_DIR:-/opt/metacubexd}"
+OPENCLASH_OPENAI_RULE_PROVIDER_URL="${OPENCLASH_OPENAI_RULE_PROVIDER_URL:-https://testingcf.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml}"
+OPENCLASH_OPENAI_REGION_REGEX="${OPENCLASH_OPENAI_REGION_REGEX:-(?i)(🇸🇬|SG|Singapore|新加坡|狮城)}"
+OPENCLASH_OPENAI_GROUP_NAME="${OPENCLASH_OPENAI_GROUP_NAME:-OpenAI}"
+OPENCLASH_OPENAI_HEALTHCHECK_URL="${OPENCLASH_OPENAI_HEALTHCHECK_URL:-https://chat.openai.com/cdn-cgi/trace}"
+OPENCLASH_OPENAI_HEALTHCHECK_INTERVAL="${OPENCLASH_OPENAI_HEALTHCHECK_INTERVAL:-300}"
 
 mkdir -p "${OPENCLASH_STATE_DIR}" "${OPENCLASH_UI_DIR}"
 
@@ -66,7 +71,12 @@ python3 /usr/local/bin/render_openclash_config.py \
   --mixed-port "${OPENCLASH_MIXED_PORT}" \
   --controller-port "${OPENCLASH_CONTROLLER_PORT}" \
   --ui-dir "${OPENCLASH_UI_DIR}" \
-  --log-level "${OPENCLASH_LOG_LEVEL}"
+  --log-level "${OPENCLASH_LOG_LEVEL}" \
+  --openai-rule-provider-url "${OPENCLASH_OPENAI_RULE_PROVIDER_URL}" \
+  --openai-region-regex "${OPENCLASH_OPENAI_REGION_REGEX}" \
+  --openai-group-name "${OPENCLASH_OPENAI_GROUP_NAME}" \
+  --openai-healthcheck-url "${OPENCLASH_OPENAI_HEALTHCHECK_URL}" \
+  --openai-healthcheck-interval "${OPENCLASH_OPENAI_HEALTHCHECK_INTERVAL}"
 
 if command -v mihomo >/dev/null 2>&1; then
   MIHOMO_BIN="$(command -v mihomo)"
