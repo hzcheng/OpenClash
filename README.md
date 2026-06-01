@@ -1,32 +1,32 @@
-# OpenClash Mihomo Gateway
+# OpenClash Mihomo 网关
 
-This repository builds a custom `mihomo` image with the `metacubexd` dashboard and a bootstrap flow that renders a runtime `config.yaml` from your subscription URL plus deployment overrides.
+本仓库构建一个自定义 `mihomo` 镜像，内置 `metacubexd` 面板，并通过启动脚本在每次容器启动时从订阅 URL 加上部署侧配置覆盖，动态生成运行时 `config.yaml`。
 
-## What This Deployment Does
+## 这个部署做了什么
 
-- Runs `mihomo` on the internal machine only.
-- Exposes one shared mixed proxy port for the host, Docker containers, LAN devices, and tailnet devices.
-- Publishes the dashboard through `NestGate` at `https://gate.teraai.cn/openclash/`.
-- Rebuilds the runtime `config.yaml` from the subscription every time the container starts.
+- 在内网机器上运行 `mihomo`。
+- 对外暴露一个共享混合代理端口，供宿主机、Docker 容器、LAN 设备和 Tailnet 设备使用。
+- 通过 `NestGate` 将面板发布到 `https://gate.teraai.cn/openclash/`。
+- 每次容器启动时从订阅重新生成运行时 `config.yaml`。
 
-This means the proxy is now a shared entrypoint on the internal machine, while the dashboard is still intended to be accessed through the gateway.
+代理是内网机器上的共享出口，面板仍通过网关访问。
 
-## Required `.env` Values
+## 必填 `.env` 变量
 
-Set these in `.env` (see `.env.example` for defaults):
+在 `.env` 中设置（默认值参见 `.env.example`）：
 
-- `OPENCLASH_SUBSCRIPTION_URL`: Clash-compatible subscription URL.
-- `OPENCLASH_MIXED_PORT`: Shared mixed proxy port for host, containers, LAN, and tailnet.
-- `OPENCLASH_CONTROLLER_PORT`: Controller/UI port (published for NestGate).
-- `OPENCLASH_LOG_LEVEL`: Log level for `mihomo`.
-- `OPENCLASH_UI_PATH`: Public dashboard path (keep `/openclash/`).
-- `OPENCLASH_UI_DIR`: UI assets location inside the container.
-- `OPENCLASH_STATE_DIR`: Runtime state directory inside the container.
-- `OPENCLASH_AUTO_UPDATE_UI`: Documented no-op (UI assets are baked at build time).
-- `OPENCLASH_BUILD_ALPINE_REPO`: Optional build-time Alpine mirror root, useful in mainland China.
-- `OPENCLASH_BUILD_METACUBEXD_URL`: Optional build-time UI archive URL override.
+- `OPENCLASH_SUBSCRIPTION_URL`：Clash 兼容的订阅链接。
+- `OPENCLASH_MIXED_PORT`：供宿主机、容器、LAN 和 Tailnet 共享的混合代理端口。
+- `OPENCLASH_CONTROLLER_PORT`：控制器/UI 端口（供 NestGate 使用）。
+- `OPENCLASH_LOG_LEVEL`：`mihomo` 日志级别。
+- `OPENCLASH_UI_PATH`：面板公开路径（保持 `/openclash/`）。
+- `OPENCLASH_UI_DIR`：容器内 UI 静态资源路径。
+- `OPENCLASH_STATE_DIR`：容器内运行时状态目录。
+- `OPENCLASH_AUTO_UPDATE_UI`：文档占位，无实际效果（UI 资源在构建时已打入镜像）。
+- `OPENCLASH_BUILD_ALPINE_REPO`：可选，构建时 Alpine 镜像源根路径，大陆环境适用。
+- `OPENCLASH_BUILD_METACUBEXD_URL`：可选，构建时 UI 压缩包 URL 覆盖。
 
-Typical local values:
+典型本地配置：
 
 ```dotenv
 OPENCLASH_SUBSCRIPTION_URL=https://example.com/subscription.yaml
@@ -39,42 +39,42 @@ OPENCLASH_STATE_DIR=/root/.config/mihomo
 OPENCLASH_AUTO_UPDATE_UI=false
 ```
 
-## Proxy Usage
+## 代理使用方式
 
-The mixed proxy port is now published on all interfaces.
+混合代理端口现已在所有网卡上监听。
 
-Examples:
+示例：
 
-- HTTP proxy: `http://127.0.0.1:9981`
-- HTTPS proxy: `http://127.0.0.1:9981`
-- SOCKS-compatible client using mixed mode: `127.0.0.1:9981`
+- HTTP 代理：`http://127.0.0.1:9981`
+- HTTPS 代理：`http://127.0.0.1:9981`
+- SOCKS 兼容客户端（混合模式）：`127.0.0.1:9981`
 
-Shared entrypoints:
+各场景接入地址：
 
-- Host itself: `127.0.0.1:${OPENCLASH_MIXED_PORT}`
-- Docker containers on the same machine: `http://host.docker.internal:${OPENCLASH_MIXED_PORT}`
-- LAN devices: `http://<internal-host-lan-ip>:${OPENCLASH_MIXED_PORT}`
-- Tailnet devices: `http://100.101.7.100:${OPENCLASH_MIXED_PORT}`
+- 宿主机：`127.0.0.1:${OPENCLASH_MIXED_PORT}`
+- 同机 Docker 容器：`http://host.docker.internal:${OPENCLASH_MIXED_PORT}`
+- LAN 设备：`http://<内网主机 LAN IP>:${OPENCLASH_MIXED_PORT}`
+- Tailnet 设备：`http://100.101.7.100:${OPENCLASH_MIXED_PORT}`
 
-This proxy entrypoint does not use username/password authentication. Any device that can reach the machine on LAN or tailnet can use it.
+该代理出口不需要用户名/密码认证，LAN 或 Tailnet 内能访问到本机的设备均可直接使用。
 
-`mihomo` requires the external UI path to live under its safe home directory. The default state/UI paths therefore use `/root/.config/mihomo` inside the container.
+`mihomo` 要求外部 UI 路径位于其安全目录下，因此默认 state/UI 路径均使用容器内的 `/root/.config/mihomo`。
 
-## Public Dashboard
+## 公网面板
 
-The dashboard is published through NestGate at:
+面板通过 NestGate 发布：
 
 - `https://gate.teraai.cn/openclash/`
 
-Public behavior:
+访问行为：
 
-- `NestGate` redirects `/openclash/` to `/openclash/ui/`
-- the route is protected by the existing gateway Basic Auth
-- after passing gateway auth, `metacubexd` talks back to the controller through the same `/openclash/` public path
+- `NestGate` 将 `/openclash/` 重定向到 `/openclash/ui/`
+- 路由受现有网关 Basic Auth 保护
+- 通过网关认证后，`metacubexd` 通过同一公开路径 `/openclash/` 回调控制器
 
-The controller root itself is API-oriented, so the UI entrypoint is `/openclash/ui/`.
+控制器根路径为 API 接口，面板入口为 `/openclash/ui/`。
 
-## Startup
+## 启动
 
 ```bash
 cd /Projects/Repos/OpenClash
@@ -84,20 +84,20 @@ docker compose --env-file .env build
 docker compose --env-file .env up -d --remove-orphans
 ```
 
-If you are building from mainland China and official upstreams are slow, you can override the two build-time source URLs in `.env` before running `docker compose build`.
+如在大陆构建且官方上游较慢，可在运行 `docker compose build` 前在 `.env` 中覆盖两个构建时源 URL。
 
-## Day-To-Day Operations
+## 日常操作
 
-### Refresh Subscription and Runtime Config
+### 刷新订阅和运行时配置
 
-The generated `config.yaml` is recreated on container start. To pull the latest subscription and regenerate config:
+`config.yaml` 在容器启动时自动重新生成。拉取最新订阅并重建配置：
 
 ```bash
 cd /Projects/Repos/OpenClash
 docker compose --env-file .env restart
 ```
 
-If you changed build-related files such as `Dockerfile`, `bootstrap-openclash.sh`, or baked UI behavior:
+如果修改了 `Dockerfile`、`bootstrap-openclash.sh` 等构建相关文件：
 
 ```bash
 cd /Projects/Repos/OpenClash
@@ -105,7 +105,7 @@ docker compose --env-file .env build
 docker compose --env-file .env up -d --force-recreate --remove-orphans
 ```
 
-### Inspect Runtime State
+### 查看运行时状态
 
 ```bash
 docker logs --tail 200 openclash
@@ -113,7 +113,7 @@ docker exec openclash sh -c 'sed -n "1,80p" /root/.config/mihomo/config.yaml'
 docker exec openclash sh -c 'cat /root/.config/mihomo/ui/config.js'
 ```
 
-### Stop or Start the Service
+### 停止/启动服务
 
 ```bash
 cd /Projects/Repos/OpenClash
@@ -121,9 +121,9 @@ docker compose --env-file .env stop
 docker compose --env-file .env start
 ```
 
-## Verification
+## 验证
 
-From the internal host:
+从内网宿主机：
 
 ```bash
 docker compose --env-file .env ps
@@ -131,94 +131,94 @@ curl -sS -D - -o /tmp/openclash-ui.html http://127.0.0.1:${OPENCLASH_CONTROLLER_
 curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:${OPENCLASH_MIXED_PORT} || true
 ```
 
-Expected:
+预期：
 
-- `openclash` container is `Up`
-- `/${OPENCLASH_CONTROLLER_PORT}/ui/` returns `200`
-- the host can reach the shared proxy port
+- `openclash` 容器状态为 `Up`
+- `/${OPENCLASH_CONTROLLER_PORT}/ui/` 返回 `200`
+- 宿主机可访问共享代理端口
 
-From another tailnet-reachable machine:
+从 Tailnet 可达的其他机器：
 
 ```bash
 curl --noproxy '*' -sS -D - -o /tmp/openclash-tailnet-ui.html http://100.101.7.100:${OPENCLASH_CONTROLLER_PORT}/ui/ | sed -n '1,20p'
 curl --noproxy '*' -sS -o /dev/null -w '%{http_code}\n' http://100.101.7.100:${OPENCLASH_MIXED_PORT} || true
 ```
 
-Expected:
+预期：
 
-- controller/UI path returns `200`
-- mixed proxy port answers on the tailnet address
+- 控制器/UI 路径返回 `200`
+- 混合代理端口在 Tailnet 地址上有响应
 
-From a Docker container on the same machine:
+从同机 Docker 容器：
 
 ```bash
 docker exec DevBox-devbox sh -lc 'env -u http_proxy -u https_proxy -u all_proxy -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY curl --noproxy "*" -sS -o /dev/null -w "%{http_code}\n" http://host.docker.internal:9981'
 ```
 
-Expected:
+预期：
 
-- the container can reach the shared proxy via `host.docker.internal`
+- 容器可通过 `host.docker.internal` 访问共享代理
 
-From the public internet:
+从公网：
 
 ```bash
 curl -k -I https://gate.teraai.cn/openclash/
 curl -k -I https://gate.teraai.cn/openclash/ui/
 ```
 
-Expected:
+预期：
 
-- `/openclash/` returns `302` to `/openclash/ui/`
-- `/openclash/ui/` returns `401` until gateway auth is provided
+- `/openclash/` 返回 `302` 跳转到 `/openclash/ui/`
+- `/openclash/ui/` 在未提供网关认证时返回 `401`
 
-## OpenAI Routing
+## OpenAI 分流
 
-OpenAI traffic is steered to a `url-test` proxy-group built from your subscription's Singapore nodes. The renderer adds three things to the runtime config every restart:
+OpenAI 流量被引导到由订阅中新加坡节点组成的 `url-test` 代理分组。每次容器重启，渲染器会向运行时配置注入三项内容：
 
-- a `rule-providers.openai` entry that pulls the `blackmatrix7` OpenAI rule list (jsdelivr-mirrored, refreshes every 24h)
-- an `OpenAI` proxy-group of `type: url-test` whose members are the proxies whose names match `OPENCLASH_OPENAI_REGION_REGEX`
-- a top-priority `RULE-SET,openai,OpenAI` rule
+- `rule-providers.openai`：拉取 `blackmatrix7` 的 OpenAI 规则列表（jsdelivr 镜像，每 24 小时刷新一次）
+- `OpenAI` 代理分组（`type: url-test`）：成员为订阅中名称匹配 `OPENCLASH_OPENAI_REGION_REGEX` 的节点
+- 最高优先级规则 `RULE-SET,openai,OpenAI`
 
-Defaults route only Singapore nodes. To widen coverage to Japan as well:
+默认只使用新加坡节点。如需同时包含日本节点：
 
 ```dotenv
 OPENCLASH_OPENAI_REGION_REGEX=(?i)(🇸🇬|🇯🇵|SG|JP|Singapore|Japan|新加坡|日本|东京|狮城|Tokyo)
 ```
 
-The default healthcheck URL is `https://chat.openai.com/cdn-cgi/trace`, which reflects real OpenAI reachability. If your provider rate-limits Cloudflare trace probes, switch to the more permissive Google probe:
+默认健康检查 URL 为 `https://chat.openai.com/cdn-cgi/trace`，能真实反映 OpenAI 的可达性。如果节点服务商对 Cloudflare trace 探测有频率限制，可切换为更宽松的 Google 探测地址：
 
 ```dotenv
 OPENCLASH_OPENAI_HEALTHCHECK_URL=https://www.gstatic.com/generate_204
 ```
 
-If a subscription refresh produces zero matching nodes, the renderer fails loudly and the container does not start — the proxy will not silently fall back to DIRECT. Rename nodes upstream or relax the regex.
+如果某次订阅刷新后没有节点匹配正则，渲染器会报错退出，容器拒绝启动——不会静默降级为 DIRECT。请在上游重命名节点，或放宽正则表达式。
 
-## Mainland China Notes
+## 大陆网络说明
 
-This deployment includes two hardening choices for mainland network conditions:
+本部署包含两项针对大陆网络环境的加固：
 
-- the image can build from a mirror via `OPENCLASH_BUILD_ALPINE_REPO`
-- generated `mihomo` config pins `geox-url` to `testingcf.jsdelivr.net` so GEO/MMDB downloads do not stall on GitHub release endpoints
+- 构建时可通过 `OPENCLASH_BUILD_ALPINE_REPO` 指定镜像源
+- 生成的 `mihomo` 配置将 `geox-url` 固定指向 `testingcf.jsdelivr.net`，避免从 GitHub Release 拉取 GEO/MMDB 时卡住
 
-If startup logs show `Can't find MMDB, start download` for too long, check outbound connectivity first:
+如果启动日志长时间出现 `Can't find MMDB, start download`，先检查出站连通性：
 
 ```bash
 docker exec openclash sh -c 'curl -I --max-time 20 https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb'
 ```
 
-## Troubleshooting
+## 常见问题
 
-- If the container keeps restarting with a `SAFE_PATHS` error, verify `OPENCLASH_STATE_DIR` and `OPENCLASH_UI_DIR` are under `/root/.config/mihomo`.
-- If the dashboard opens but cannot connect to the backend, verify `/root/.config/mihomo/ui/config.js` contains `defaultBackendURL: '/openclash/'`.
-- If `/openclash/ui/` works on the tailnet but not publicly, check `NestGate` route rendering and gateway auth configuration.
-- If the proxy is unexpectedly unreachable from LAN, tailnet, or containers, re-check the compose port binding for `OPENCLASH_MIXED_PORT`; it should no longer be pinned to `127.0.0.1`.
-- If a subscription update does not appear to take effect, restart or recreate the container so the bootstrap flow regenerates `config.yaml`.
+- 容器反复重启并出现 `SAFE_PATHS` 错误：确认 `OPENCLASH_STATE_DIR` 和 `OPENCLASH_UI_DIR` 均在 `/root/.config/mihomo` 下。
+- 面板能打开但无法连接后端：确认 `/root/.config/mihomo/ui/config.js` 中包含 `defaultBackendURL: '/openclash/'`。
+- Tailnet 内 `/openclash/ui/` 可访问但公网不行：检查 `NestGate` 路由渲染和网关认证配置。
+- 代理对 LAN、Tailnet 或容器意外不可达：检查 compose 中 `OPENCLASH_MIXED_PORT` 的端口绑定，确认不再绑定到 `127.0.0.1`。
+- 更新订阅后配置未生效：重启或重建容器，让 bootstrap 流程重新生成 `config.yaml`。
 
-## Key Files
+## 关键文件
 
-- `docker-compose.yml`: runtime ports, restart policy, and state volume
-- `Dockerfile`: custom image with `mihomo`, bootstrap tooling, and baked `metacubexd`
-- `scripts/bootstrap-openclash.sh`: startup orchestration, UI sync, and config generation
-- `scripts/render_openclash_config.py`: deployment-owned config overrides
-- `.env.example`: deployment contract
-- `README.md`: operational notes for this service
+- `docker-compose.yml`：运行时端口、重启策略和状态卷
+- `Dockerfile`：含 `mihomo`、bootstrap 工具和 `metacubexd` 的自定义镜像
+- `scripts/bootstrap-openclash.sh`：启动编排、UI 同步和配置生成
+- `scripts/render_openclash_config.py`：部署侧配置覆盖逻辑
+- `.env.example`：部署契约
+- `README.md`：本服务的运维说明
