@@ -2,9 +2,27 @@ mixed-port: 7890
 allow-lan: true
 mode: rule
 proxies:
-  - name: test-proxy
+  - name: 🇸🇬 SG-01
     type: ss
-    server: example.com
+    server: sg1.example.com
+    port: 8388
+    cipher: aes-128-gcm
+    password: password
+  - name: Singapore-02
+    type: ss
+    server: sg2.example.com
+    port: 8388
+    cipher: aes-128-gcm
+    password: password
+  - name: 日本-东京-01
+    type: ss
+    server: jp1.example.com
+    port: 8388
+    cipher: aes-128-gcm
+    password: password
+  - name: US-LA-01
+    type: ss
+    server: us1.example.com
     port: 8388
     cipher: aes-128-gcm
     password: password
@@ -12,6 +30,9 @@ proxy-groups:
   - name: Auto
     type: select
     proxies:
-      - test-proxy
+      - 🇸🇬 SG-01
+      - Singapore-02
+      - 日本-东京-01
+      - US-LA-01
 rules:
   - MATCH,Auto
