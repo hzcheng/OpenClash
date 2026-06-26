@@ -17,6 +17,7 @@ services:
       - "${OPENCLASH_CONTROLLER_PORT}:${OPENCLASH_CONTROLLER_PORT}"
     volumes:
       - openclash-state:${OPENCLASH_STATE_DIR}
+      - ./configs:/openclash-configs:ro
 
 volumes:
   openclash-state:

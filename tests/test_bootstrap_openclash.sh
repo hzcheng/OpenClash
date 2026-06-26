@@ -8,17 +8,12 @@ UI_DIR="${TMP_DIR}/ui"
 BUNDLED_UI_DIR="${TMP_DIR}/bundled-ui"
 FAKE_BIN="${TMP_DIR}/bin"
 MIHOMO_LOG="${TMP_DIR}/mihomo-invocation.log"
-RENDER_BIN="/usr/local/bin/render_openclash_config.py"
-RENDER_BACKUP="${TMP_DIR}/render_openclash_config.py.bak"
+RENDER_BIN="${TMP_DIR}/render_openclash_config.py"
 
 cleanup() {
   if [[ -n "${SERVER_PID:-}" ]]; then
     kill "${SERVER_PID}" >/dev/null 2>&1 || true
-  fi
-  if [[ -f "${RENDER_BACKUP}" ]]; then
-    mv "${RENDER_BACKUP}" "${RENDER_BIN}"
-  else
-    rm -f "${RENDER_BIN}"
+    wait "${SERVER_PID}" 2>/dev/null || true
   fi
   rm -rf "${TMP_DIR}"
 }
@@ -40,9 +35,6 @@ exit 0
 EOF
 chmod +x "${FAKE_BIN}/mihomo"
 
-if [[ -f "${RENDER_BIN}" ]]; then
-  cp "${RENDER_BIN}" "${RENDER_BACKUP}"
-fi
 cp "${ROOT_DIR}/scripts/render_openclash_config.py" "${RENDER_BIN}"
 
 PORT="$(python3 - <<'PY'
@@ -55,7 +47,10 @@ sock.close()
 PY
 )"
 
-python3 -m http.server "${PORT}" --bind 127.0.0.1 --directory "${ROOT_DIR}/tests/fixtures" >/dev/null 2>&1 &
+(
+  cd "${ROOT_DIR}/tests/fixtures"
+  python3 -m http.server "${PORT}" --bind 127.0.0.1
+) >/dev/null 2>&1 &
 SERVER_PID=$!
 
 for _ in {1..25}; do
@@ -65,7 +60,6 @@ for _ in {1..25}; do
   sleep 0.1
 done
 
-export OPENCLASH_SUBSCRIPTION_URL="http://127.0.0.1:${PORT}/subscription-base.yaml"
 export OPENCLASH_MIXED_PORT=9981
 export OPENCLASH_CONTROLLER_PORT=9097
 export OPENCLASH_LOG_LEVEL=warning
@@ -73,9 +67,12 @@ export OPENCLASH_UI_PATH=/openclash
 export OPENCLASH_UI_DIR="${UI_DIR}"
 export OPENCLASH_STATE_DIR="${STATE_DIR}"
 export OPENCLASH_BUNDLED_UI_SOURCE_DIR="${BUNDLED_UI_DIR}"
+export OPENCLASH_RENDER_BIN="${RENDER_BIN}"
 export MIHOMO_INVOCATION_LOG="${MIHOMO_LOG}"
 export PATH="${FAKE_BIN}:${PATH}"
 
+export OPENCLASH_CONFIG_SOURCE=subscription
+export OPENCLASH_SUBSCRIPTION_URL="http://127.0.0.1:${PORT}/subscription-base.yaml"
 bash "${ROOT_DIR}/scripts/bootstrap-openclash.sh"
 
 test -f "${STATE_DIR}/config.yaml"
@@ -84,6 +81,16 @@ grep -Eq "^bind-address: ('\\*'|\\*)$" "${STATE_DIR}/config.yaml"
 grep -q '^mixed-port: 9981$' "${STATE_DIR}/config.yaml"
 grep -q "defaultBackendURL: '/openclash/'" "${UI_DIR}/config.js"
 grep -q "mihomo -f ${STATE_DIR}/config.yaml" "${MIHOMO_LOG}"
-grep -q '^- RULE-SET,openai,OpenAI$' "${STATE_DIR}/config.yaml"
-grep -q 'name: OpenAI' "${STATE_DIR}/config.yaml"
-grep -q 'type: url-test' "${STATE_DIR}/config.yaml"
+grep -q 'name: Auto' "${STATE_DIR}/config.yaml"
+grep -Eq '^- MATCH,Auto$|^rules:.*MATCH,Auto' "${STATE_DIR}/config.yaml"
+
+: > "${MIHOMO_LOG}"
+export OPENCLASH_CONFIG_SOURCE=file
+export OPENCLASH_CONFIG_FILE="${ROOT_DIR}/tests/fixtures/subscription-base.yaml"
+bash "${ROOT_DIR}/scripts/bootstrap-openclash.sh"
+
+test -f "${STATE_DIR}/config.yaml"
+grep -q '^mixed-port: 9981$' "${STATE_DIR}/config.yaml"
+grep -q 'name: Auto' "${STATE_DIR}/config.yaml"
+grep -Eq '^- MATCH,Auto$|^rules:.*MATCH,Auto' "${STATE_DIR}/config.yaml"
+grep -q "mihomo -f ${STATE_DIR}/config.yaml" "${MIHOMO_LOG}"

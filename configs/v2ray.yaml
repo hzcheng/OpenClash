@@ -1,0 +1,20 @@
+mode: rule
+proxies:
+  - name: VM-0-17-ubuntu-vmess-443
+    type: vmess
+    server: 43.153.117.54
+    port: 443
+    uuid: 6bcb015f-13da-46f4-a145-a52c3e99f8fe
+    alterId: 0
+    cipher: auto
+    udp: true
+    tls: false
+    network: tcp
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies:
+      - VM-0-17-ubuntu-vmess-443
+      - DIRECT
+rules:
+  - MATCH,Proxy

@@ -2,7 +2,7 @@ mixed-port: 7890
 allow-lan: true
 mode: rule
 proxies:
-  - name: 🇸🇬 SG-01
+  - name: SG-01
     type: ss
     server: sg1.example.com
     port: 8388
@@ -30,7 +30,7 @@ proxy-groups:
   - name: Auto
     type: select
     proxies:
-      - 🇸🇬 SG-01
+      - SG-01
       - Singapore-02
       - 日本-东京-01
       - US-LA-01

@@ -1,19 +1,21 @@
 # OpenClash Mihomo 网关
 
-本仓库构建一个自定义 `mihomo` 镜像，内置 `metacubexd` 面板，并通过启动脚本在每次容器启动时从订阅 URL 加上部署侧配置覆盖，动态生成运行时 `config.yaml`。
+本仓库构建一个自定义 `mihomo` 镜像，内置 `metacubexd` 面板，并通过启动脚本在每次容器启动时从订阅 URL 或本地挂载配置加上部署侧配置覆盖，动态生成运行时 `config.yaml`。
 
 ## 这个部署做了什么
 
 - 在内网机器上运行 `mihomo`。
 - 对外暴露一个共享混合代理端口，供宿主机、Docker 容器、LAN 设备和 Tailnet 设备使用。
 - 控制面板直接通过控制器端口访问，无需经过公网代理。
-- 每次容器启动时从订阅重新生成运行时 `config.yaml`。
+- 每次容器启动时从订阅或本地配置文件重新生成运行时 `config.yaml`。
 
 ## 必填 `.env` 变量
 
 在 `.env` 中设置（默认值参见 `.env.example`）：
 
-- `OPENCLASH_SUBSCRIPTION_URL`：Clash 兼容的订阅链接。
+- `OPENCLASH_CONFIG_SOURCE`：配置来源，`subscription` 或 `file`。
+- `OPENCLASH_SUBSCRIPTION_URL`：Clash 兼容的订阅链接，仅 `subscription` 模式使用。
+- `OPENCLASH_CONFIG_FILE`：容器内 Clash/Mihomo 配置路径，仅 `file` 模式使用。
 - `OPENCLASH_MIXED_PORT`：供宿主机、容器、LAN 和 Tailnet 共享的混合代理端口。
 - `OPENCLASH_CONTROLLER_PORT`：控制器/UI 端口，面板通过此端口直接访问。
 - `OPENCLASH_LOG_LEVEL`：`mihomo` 日志级别。
@@ -27,7 +29,9 @@
 典型本地配置：
 
 ```dotenv
+OPENCLASH_CONFIG_SOURCE=subscription
 OPENCLASH_SUBSCRIPTION_URL=https://example.com/subscription.yaml
+OPENCLASH_CONFIG_FILE=/openclash-configs/v2ray.yaml
 OPENCLASH_MIXED_PORT=9981
 OPENCLASH_CONTROLLER_PORT=9097
 OPENCLASH_LOG_LEVEL=warning
@@ -36,6 +40,15 @@ OPENCLASH_UI_DIR=/root/.config/mihomo/ui
 OPENCLASH_STATE_DIR=/root/.config/mihomo
 OPENCLASH_AUTO_UPDATE_UI=false
 ```
+
+切换到本地配置文件模式：
+
+```dotenv
+OPENCLASH_CONFIG_SOURCE=file
+OPENCLASH_CONFIG_FILE=/openclash-configs/v2ray.yaml
+```
+
+宿主机的 `./configs` 会以只读方式挂载到容器内 `/openclash-configs`。本仓库内置的 `configs/v2ray.yaml` 指向 `43.153.117.54:443` 的 `vmess` 节点。
 
 ## 代理使用方式
 
@@ -82,9 +95,9 @@ docker compose --env-file .env up -d --remove-orphans
 
 ## 日常操作
 
-### 刷新订阅和运行时配置
+### 刷新配置
 
-`config.yaml` 在容器启动时自动重新生成。拉取最新订阅并重建配置：
+`config.yaml` 在容器启动时自动重新生成。订阅模式下会拉取最新订阅；文件模式下会重新读取挂载配置：
 
 ```bash
 cd /Projects/Repos/OpenClash
@@ -165,28 +178,6 @@ curl -k -I https://gate.teraai.cn/openclash/ui/
 - `/openclash/` 返回 `302` 跳转到 `/openclash/ui/`
 - `/openclash/ui/` 在未提供网关认证时返回 `401`
 
-## OpenAI 分流
-
-OpenAI 流量被引导到由订阅中新加坡节点组成的 `url-test` 代理分组。每次容器重启，渲染器会向运行时配置注入三项内容：
-
-- `rule-providers.openai`：拉取 `blackmatrix7` 的 OpenAI 规则列表（jsdelivr 镜像，每 24 小时刷新一次）
-- `OpenAI` 代理分组（`type: url-test`）：成员为订阅中名称匹配 `OPENCLASH_OPENAI_REGION_REGEX` 的节点
-- 最高优先级规则 `RULE-SET,openai,OpenAI`
-
-默认只使用新加坡节点。如需同时包含日本节点：
-
-```dotenv
-OPENCLASH_OPENAI_REGION_REGEX=(?i)(🇸🇬|🇯🇵|SG|JP|Singapore|Japan|新加坡|日本|东京|狮城|Tokyo)
-```
-
-默认健康检查 URL 为 `https://chat.openai.com/cdn-cgi/trace`，能真实反映 OpenAI 的可达性。如果节点服务商对 Cloudflare trace 探测有频率限制，可切换为更宽松的 Google 探测地址：
-
-```dotenv
-OPENCLASH_OPENAI_HEALTHCHECK_URL=https://www.gstatic.com/generate_204
-```
-
-如果某次订阅刷新后没有节点匹配正则，渲染器会报错退出，容器拒绝启动——不会静默降级为 DIRECT。请在上游重命名节点，或放宽正则表达式。
-
 ## 大陆网络说明
 
 本部署包含两项针对大陆网络环境的加固：
@@ -206,11 +197,12 @@ docker exec openclash sh -c 'curl -I --max-time 20 https://testingcf.jsdelivr.ne
 - 面板能打开但无法连接后端：确认 `/root/.config/mihomo/ui/config.js` 中包含 `defaultBackendURL: '/openclash/'`。
 - Tailnet 内 `/openclash/ui/` 可访问但公网不行：检查 `NestGate` 路由渲染和网关认证配置。
 - 代理对 LAN、Tailnet 或容器意外不可达：检查 compose 中 `OPENCLASH_MIXED_PORT` 的端口绑定，确认不再绑定到 `127.0.0.1`。
-- 更新订阅后配置未生效：重启或重建容器，让 bootstrap 流程重新生成 `config.yaml`。
+- 更新订阅或挂载配置后配置未生效：重启或重建容器，让 bootstrap 流程重新生成 `config.yaml`。
 
 ## 关键文件
 
 - `docker-compose.yml`：运行时端口、重启策略和状态卷
+- `configs/v2ray.yaml`：本地配置文件模式示例，指向自建 V2Ray 节点
 - `Dockerfile`：含 `mihomo`、bootstrap 工具和 `metacubexd` 的自定义镜像
 - `scripts/bootstrap-openclash.sh`：启动编排、UI 同步和配置生成
 - `scripts/render_openclash_config.py`：部署侧配置覆盖逻辑
