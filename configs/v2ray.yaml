@@ -1,127 +1,322 @@
+allow-lan: true
+bind-address: '*'
+external-controller: 0.0.0.0:9097
+external-ui: /root/.config/mihomo/ui
+log-level: warning
+mixed-port: 9981
 mode: rule
+port: 7890
 proxies:
-  - name: VM-0-17-ubuntu-vmess-443
-    type: vmess
-    server: 43.153.117.54
-    port: 443
-    uuid: 6bcb015f-13da-46f4-a145-a52c3e99f8fe
-    alterId: 0
-    cipher: auto
-    udp: true
-    tls: false
-    network: tcp
+- name: 美国西雅图
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: fd296acc-thtb40-tihl04-hjl5.se.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国西雅图2
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 45f35fc6-thtb40-tihl04-hjl5.sv.plebai.net
+  type: socks5
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国洛杉矶[CM]
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 5228
+  server: 522e9c74-thtb40-tihl04-hjl5.us.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国硅谷
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: c80c6d63-thtb40-tihl04-hjl5.sj.oshuawei.com
+  type: socks5
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国硅谷2
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: d77b9be0-thtb40-tihl04-hjl5.sj.hyhuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国硅谷3
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 00d3889e-thtb40-tihl04-hjl5.u12.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国圣何塞
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: f07e7a17-thtb40-tihl04-hjl5.sjc.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国洛杉矶
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: a610df3a-thtb40-tihl04-hjl5.los.gotochinatown.net
+  type: socks5
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国洛杉矶2
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: a610df3a-thtb40-tihl04-hjl5.los.gotochinatown.net
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: 美国ISP
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 8443
+  server: c4139df3-thtb40-tihl04-hjl5.isp.cdnkuaishou.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1ED\U0001F1F0香港中转[CM]"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 5228
+  server: 8e161f12-thtb40-tihl04-hjl5.cm4.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1ED\U0001F1F0香港精品4"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 2807f2fb-thtb40-tihl04-hjl5.hkt2.cdnhuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1ED\U0001F1F0香港精品3"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 8443
+  server: 6ea9a201-thtb40-tihl04-hjl5.hkt.cdnhuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1ED\U0001F1F0香港精品2"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 2807f2fb-thtb40-tihl04-hjl5.hkt2.cdnhuawei.com
+  type: socks5
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1ED\U0001F1F0 香港02"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 5a3fb76e-thtb40-tihl04-hjl5.hk2.hyhuawei.com
+  type: anytls
+- name: "\U0001F1ED\U0001F1F0 香港03"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 366e15bd-thtb40-tihl04-hjl5.hk3.hyhuawei.com
+  type: anytls
+- name: "\U0001F1EC\U0001F1E7 英国"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 0057f88d-thtb40-tihl04-hjl5.uk.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1EB\U0001F1F7 法国"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: dd7618a9-thtb40-tihl04-hjl5.fr.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1E9\U0001F1EA 德国"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: bc48fa1e-thtb40-tihl04-hjl5.de3.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F2\U0001F1FE 马来西亚"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 5228
+  server: bee5ecf0-thtb40-tihl04-hjl5.my.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F9\U0001F1ED 泰国[CM]"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 32232
+  server: 74ebeea5-thtb40-tihl04-hjl5.id.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F0\U0001F1F7韩國"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 31433
+  server: e6931620-thtb40-tihl04-hjl5.kr.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1E8\U0001F1F3 台湾"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: d8f97ed3-thtb40-tihl04-hjl5.tw3.p5pv.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1EF\U0001F1F5 日本"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 511f3656-thtb40-tihl04-hjl5.jp.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1EE\U0001F1E9 印尼"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 5228
+  server: 74ebeea5-thtb40-tihl04-hjl5.id.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1EF\U0001F1F5 日本4"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 788452b6-thtb40-tihl04-hjl5.jp4.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F8\U0001F1EC 新加坡[CM]"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 5228
+  server: 70c75703-thtb40-tihl04-hjl5.sg2.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F8\U0001F1EC 新加坡"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: e84d779f-thtb40-tihl04-hjl5.sg.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- name: "\U0001F1F8\U0001F1EC 新加坡3"
+  password: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+  port: 443
+  server: 57eb4f49-thtb40-tihl04-hjl5.sg3.oshuawei.com
+  tls: true
+  type: http
+  username: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
+- alterId: 0
+  cipher: auto
+  name: 线路少请更换软件看公告
+  network: tcp
+  port: 443
+  server: hostloc.com
+  tls: true
+  type: vmess
+  udp: true
+  uuid: 35e24af4-289d-11eb-a8bf-f23c91cfbbc9
 proxy-groups:
-  - name: Proxy
-    type: select
-    proxies:
-      - VM-0-17-ubuntu-vmess-443
-      - DIRECT
+- interval: 300
+  name: Auto
+  proxies:
+  - 美国西雅图
+  - 美国西雅图2
+  - 美国洛杉矶[CM]
+  - 美国硅谷
+  - 美国硅谷2
+  - 美国硅谷3
+  - 美国圣何塞
+  - 美国洛杉矶
+  - 美国洛杉矶2
+  - 美国ISP
+  - "\U0001F1ED\U0001F1F0香港中转[CM]"
+  - "\U0001F1ED\U0001F1F0香港精品4"
+  - "\U0001F1ED\U0001F1F0香港精品3"
+  - "\U0001F1ED\U0001F1F0香港精品2"
+  - "\U0001F1ED\U0001F1F0 香港02"
+  - "\U0001F1ED\U0001F1F0 香港03"
+  - "\U0001F1EC\U0001F1E7 英国"
+  - "\U0001F1EB\U0001F1F7 法国"
+  - "\U0001F1E9\U0001F1EA 德国"
+  - "\U0001F1F2\U0001F1FE 马来西亚"
+  - "\U0001F1F9\U0001F1ED 泰国[CM]"
+  - "\U0001F1F0\U0001F1F7韩國"
+  - "\U0001F1E8\U0001F1F3 台湾"
+  - "\U0001F1EF\U0001F1F5 日本"
+  - "\U0001F1EE\U0001F1E9 印尼"
+  - "\U0001F1EF\U0001F1F5 日本4"
+  - "\U0001F1F8\U0001F1EC 新加坡[CM]"
+  - "\U0001F1F8\U0001F1EC 新加坡"
+  - "\U0001F1F8\U0001F1EC 新加坡3"
+  - 线路少请更换软件看公告
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+- name: Proxy
+  proxies:
+  - Auto
+  - 美国西雅图
+  - 美国西雅图2
+  - 美国洛杉矶[CM]
+  - 美国硅谷
+  - 美国硅谷2
+  - 美国硅谷3
+  - 美国圣何塞
+  - 美国洛杉矶
+  - 美国洛杉矶2
+  - 美国ISP
+  - "\U0001F1ED\U0001F1F0香港中转[CM]"
+  - "\U0001F1ED\U0001F1F0香港精品4"
+  - "\U0001F1ED\U0001F1F0香港精品3"
+  - "\U0001F1ED\U0001F1F0香港精品2"
+  - "\U0001F1ED\U0001F1F0 香港02"
+  - "\U0001F1ED\U0001F1F0 香港03"
+  - "\U0001F1EC\U0001F1E7 英国"
+  - "\U0001F1EB\U0001F1F7 法国"
+  - "\U0001F1E9\U0001F1EA 德国"
+  - "\U0001F1F2\U0001F1FE 马来西亚"
+  - "\U0001F1F9\U0001F1ED 泰国[CM]"
+  - "\U0001F1F0\U0001F1F7韩國"
+  - "\U0001F1E8\U0001F1F3 台湾"
+  - "\U0001F1EF\U0001F1F5 日本"
+  - "\U0001F1EE\U0001F1E9 印尼"
+  - "\U0001F1EF\U0001F1F5 日本4"
+  - "\U0001F1F8\U0001F1EC 新加坡[CM]"
+  - "\U0001F1F8\U0001F1EC 新加坡"
+  - "\U0001F1F8\U0001F1EC 新加坡3"
+  - 线路少请更换软件看公告
+  type: select
+- interval: 300
+  name: AI-Auto
+  proxies:
+  - "\U0001F1EF\U0001F1F5 日本"
+  - "\U0001F1EF\U0001F1F5 日本4"
+  - "\U0001F1F8\U0001F1EC 新加坡[CM]"
+  - "\U0001F1F8\U0001F1EC 新加坡"
+  - "\U0001F1F8\U0001F1EC 新加坡3"
+  type: url-test
+  url: http://www.gstatic.com/generate_204
+- name: OpenAI
+  proxies:
+  - AI-Auto
+  - "\U0001F1EF\U0001F1F5 日本"
+  - "\U0001F1EF\U0001F1F5 日本4"
+  - "\U0001F1F8\U0001F1EC 新加坡[CM]"
+  - "\U0001F1F8\U0001F1EC 新加坡"
+  - "\U0001F1F8\U0001F1EC 新加坡3"
+  type: select
 rules:
-  - DOMAIN-SUFFIX,local,DIRECT
-  - DOMAIN-SUFFIX,localhost,DIRECT
-  - DOMAIN-SUFFIX,cn,DIRECT
-  - DOMAIN-SUFFIX,xiaohongshu.com,DIRECT
-  - DOMAIN-SUFFIX,weclawai.cc,DIRECT
-  - DOMAIN-SUFFIX,npmmirror.com,DIRECT
-  - DOMAIN-SUFFIX,taobao.org,DIRECT
-  - DOMAIN-SUFFIX,aliyun.com,DIRECT
-  - DOMAIN-SUFFIX,tencent.com,DIRECT
-  - DOMAIN-SUFFIX,ip-api.com,DIRECT
-  - DOMAIN-SUFFIX,ipip.net,DIRECT
-  - DOMAIN-SUFFIX,ip138.com,DIRECT
-  - DOMAIN-SUFFIX,skype.com,DIRECT
-  - DOMAIN-SUFFIX,skype.comedge.skype.net,DIRECT
-  - DOMAIN-SUFFIX,skypeassets.com,DIRECT
-  - DOMAIN-SUFFIX,skypeforbusiness.com,DIRECT
-  - DOMAIN-SUFFIX,cdnkuaisou.com,DIRECT
-  - DOMAIN-SUFFIX,cnkuaishou.com,DIRECT
-  - DOMAIN-SUFFIX,cdnkuaishou.com,DIRECT
-  - DOMAIN-SUFFIX,cmhuawei.com,DIRECT
-  - DOMAIN-SUFFIX,cdnhuawei.com,DIRECT
-  - DOMAIN-SUFFIX,viphuawei.com,DIRECT
-  - DOMAIN-SUFFIX,chromeapi.com,DIRECT
-  - DOMAIN-SUFFIX,paypal.com,DIRECT
-  - DOMAIN-SUFFIX,alipay.com,DIRECT
-  - DOMAIN-SUFFIX,airwallex.com,DIRECT
-  - DOMAIN-SUFFIX,stripe.com,DIRECT
-  - DOMAIN-SUFFIX,wooshpay.com,DIRECT
-  - DOMAIN-SUFFIX,payssion.com,DIRECT
-  - DOMAIN-SUFFIX,chrapi.com,DIRECT
-  - DOMAIN-SUFFIX,firapi.com,DIRECT
-  - DOMAIN-SUFFIX,gheapi.com,DIRECT
-  - DOMAIN-SUFFIX,broapi.com,DIRECT
-  - DOMAIN-SUFFIX,edgapi.com,DIRECT
-  - DOMAIN-SUFFIX,browserapi.net,DIRECT
-  - DOMAIN-SUFFIX,cnsync.com,DIRECT
-  - DOMAIN-SUFFIX,on1t.com,DIRECT
-  - DOMAIN-SUFFIX,chromeapi.net,DIRECT
-  - DOMAIN-SUFFIX,copydesign.net,DIRECT
-  - DOMAIN-SUFFIX,jy3p.com,DIRECT
-  - DOMAIN-SUFFIX,p5pv.com,DIRECT
-  - DOMAIN-SUFFIX,z7zi.com,DIRECT
-  - DOMAIN-SUFFIX,j2ai.com,DIRECT
-  - DOMAIN-SUFFIX,alrihla.net,DIRECT
-  - DOMAIN-SUFFIX,sphinxsearch.net,DIRECT
-  - DOMAIN-KEYWORD,google,Proxy
-  - DOMAIN-KEYWORD,youtube,Proxy
-  - DOMAIN-SUFFIX,ggpht.com,Proxy
-  - DOMAIN-SUFFIX,gmail.com,Proxy
-  - DOMAIN-SUFFIX,gvt2.com,Proxy
-  - DOMAIN-SUFFIX,gvt3.com,Proxy
-  - DOMAIN-SUFFIX,chrome.com,Proxy
-  - DOMAIN-SUFFIX,wikipedia.org,Proxy
-  - DOMAIN-SUFFIX,wikimedia.org,Proxy
-  - DOMAIN-SUFFIX,appspot.com,Proxy
-  - DOMAIN-SUFFIX,android.com,Proxy
-  - DOMAIN-SUFFIX,github.com,Proxy
-  - DOMAIN-SUFFIX,gitbook.com,Proxy
-  - DOMAIN-SUFFIX,kaggle.com,Proxy
-  - DOMAIN-SUFFIX,arxiv.org,Proxy
-  - DOMAIN-SUFFIX,wiktionary.org,Proxy
-  - DOMAIN-SUFFIX,blogger.com,Proxy
-  - DOMAIN-SUFFIX,youtu.be,Proxy
-  - DOMAIN-SUFFIX,ytimg.com,Proxy
-  - DOMAIN-SUFFIX,youtube.com,Proxy
-  - DOMAIN-SUFFIX,instagram.com,Proxy
-  - DOMAIN-SUFFIX,twitter.com,Proxy
-  - DOMAIN-SUFFIX,t.co,Proxy
-  - DOMAIN-SUFFIX,facebook.com,Proxy
-  - DOMAIN-SUFFIX,telegram.org,Proxy
-  - DOMAIN-SUFFIX,whatsapp.com,Proxy
-  - DOMAIN-SUFFIX,whatsapp.net,Proxy
-  - DOMAIN-SUFFIX,linkedin.com,Proxy
-  - DOMAIN-SUFFIX,licdn.com,Proxy
-  - DOMAIN-SUFFIX,trkn.us,Proxy
-  - DOMAIN-SUFFIX,cedexis.com,Proxy
-  - DOMAIN-SUFFIX,ip.sb,Proxy
-  - DOMAIN-SUFFIX,ip.net,Proxy
-  - DOMAIN-SUFFIX,openai.com,Proxy
-  - DOMAIN-SUFFIX,auth0.com,Proxy
-  - DOMAIN-SUFFIX,featuregates.org,Proxy
-  - DOMAIN-SUFFIX,statsigapi.net,Proxy
-  - DOMAIN-SUFFIX,intercom.io,Proxy
-  - DOMAIN-SUFFIX,intercomcdn.com,Proxy
-  - DOMAIN-SUFFIX,sentry.io,Proxy
-  - DOMAIN-SUFFIX,sentry.dev,Proxy
-  - DOMAIN-SUFFIX,oaistatic.com,Proxy
-  - DOMAIN-SUFFIX,oaiusercontent.com,Proxy
-  - DOMAIN-SUFFIX,chatgpt.com,Proxy
-  - DOMAIN-SUFFIX,chatgpt-async-webps-prod-southcentralus-6.webpubsub.azure.com,Proxy
-  - DOMAIN-SUFFIX,claude.ai,Proxy
-  - DOMAIN-SUFFIX,anthropic.com,Proxy
-  - DOMAIN-SUFFIX,bing.com,Proxy
-  - DOMAIN-SUFFIX,microsoftonline.com,Proxy
-  - DOMAIN-SUFFIX,live.com,Proxy
-  - DOMAIN-SUFFIX,msecnd.net,Proxy
-  - DOMAIN-SUFFIX,msn.com,Proxy
-  - DOMAIN-SUFFIX,bingapis.com,Proxy
-  - DOMAIN-SUFFIX,bing.net,Proxy
-  - DOMAIN-SUFFIX,windows.com,Proxy
-  - DOMAIN-SUFFIX,microsoft.com,Proxy
-  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
-  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
-  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
-  - GEOIP,CN,DIRECT
-  - MATCH,Proxy
+- DOMAIN-SUFFIX,local,DIRECT
+- DOMAIN-SUFFIX,localhost,DIRECT
+- DOMAIN-SUFFIX,cn,DIRECT
+- DOMAIN-SUFFIX,openai.com,OpenAI
+- DOMAIN-SUFFIX,chatgpt.com,OpenAI
+- DOMAIN-SUFFIX,oaistatic.com,OpenAI
+- DOMAIN-SUFFIX,oaiusercontent.com,OpenAI
+- DOMAIN-SUFFIX,auth0.com,OpenAI
+- DOMAIN-SUFFIX,claude.ai,OpenAI
+- DOMAIN-SUFFIX,anthropic.com,OpenAI
+- DOMAIN-SUFFIX,bing.com,Proxy
+- DOMAIN-SUFFIX,microsoft.com,Proxy
+- DOMAIN-SUFFIX,google.com,Proxy
+- DOMAIN-SUFFIX,youtube.com,Proxy
+- DOMAIN-SUFFIX,github.com,Proxy
+- GEOIP,CN,DIRECT
+- MATCH,Proxy
+socks-port: 7891

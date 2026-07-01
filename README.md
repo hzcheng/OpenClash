@@ -48,7 +48,7 @@ OPENCLASH_CONFIG_SOURCE=file
 OPENCLASH_CONFIG_FILE=/openclash-configs/v2ray.yaml
 ```
 
-宿主机的 `./configs` 会以只读方式挂载到容器内 `/openclash-configs`。本仓库内置的 `configs/v2ray.yaml` 指向 `43.153.117.54:443` 的 `vmess` 节点。
+宿主机的 `./configs` 会以只读方式挂载到容器内 `/openclash-configs`。本仓库内置的 `configs/v2ray.yaml` 可作为本地配置文件模式示例。
 
 ## 代理使用方式
 
